@@ -50,9 +50,9 @@ Backend aplikacji czatowej w czasie rzeczywistym, zbudowany przy użyciu Spring 
   ```
 ## Endpointy API
 ### Autoryzacja
-* POST /api/auth/register - Rejestracja nowego użytkownika
-* POST /api/auth/login - Logowanie użytkownika
-* POST /api/auth/login - Wylogowanie użytkownika
+* POST `/api/auth/register` - Rejestracja nowego użytkownika
+* POST `/api/auth/login` - Logowanie użytkownika
+* POST `/api/auth/login` - Wylogowanie użytkownika
 
 ## Bezpieczeństwo
 
