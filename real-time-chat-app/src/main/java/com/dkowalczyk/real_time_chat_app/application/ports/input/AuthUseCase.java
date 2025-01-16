@@ -6,7 +6,9 @@ import com.dkowalczyk.real_time_chat_app.domain.model.UserCredentials;
 public interface AuthUseCase {
     AuthenticationResult login(UserCredentials credentials);
 
-    void logout(String token);
+    void logout(String email);
 
     String refreshToken(String refreshToken);
+
+    AuthenticationResult register(UserCredentials credentials, String username);
 }
