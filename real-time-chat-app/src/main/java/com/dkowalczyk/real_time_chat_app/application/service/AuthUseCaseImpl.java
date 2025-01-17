@@ -76,7 +76,15 @@ public class AuthUseCaseImpl implements AuthUseCase {
 
     @Override
     public String refreshToken(String refreshToken) {
-        return null;
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
+            throw new UnauthorizedAccessException("Invalid refresh token");
+        }
+
+        String userEmail = jwtTokenProvider.getEmailFromRefreshToken(refreshToken);
+        UserEntity userEntity = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UserNotFoundException(userEmail));
+
+        return jwtTokenProvider.generateToken(userEntity);
     }
 
     @Override

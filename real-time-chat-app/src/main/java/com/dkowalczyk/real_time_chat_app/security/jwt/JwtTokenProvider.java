@@ -70,6 +70,28 @@ public class JwtTokenProvider {
         return claims.get("email", String.class);
     }
 
+    public boolean validateRefreshToken(String refreshToken) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(refreshToken);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public String getEmailFromRefreshToken(String refreshToken) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(refreshToken)
+                .getBody();
+
+        return claims.getSubject();
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
