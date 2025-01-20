@@ -5,6 +5,7 @@ import com.dkowalczyk.real_time_chat_app.infrastructure.persistence.entity.UserE
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
@@ -94,18 +96,51 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
+            log.debug("Starting token validation for token: {}", token.substring(0, 10) + "...");
+
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
                     .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (SecurityException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            log.debug("Token claims: {}", claims);
+
+            // Sprawdź datę wygaśnięcia
+            Date expiration = claims.getExpiration();
+            Date now = new Date();
+            log.debug("Token expiration: {}, current time: {}", expiration, now);
+
+            return !expiration.before(now);
+        } catch (SecurityException e) {
+            log.error("Invalid JWT signature", e);
+            return false;
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT token", e);
+            return false;
+        } catch (ExpiredJwtException e) {
+            log.error("Expired JWT token", e);
+            return false;
+        } catch (UnsupportedJwtException e) {
+            log.error("Unsupported JWT token", e);
+            return false;
+        } catch (IllegalArgumentException e) {
+            log.error("JWT claims string is empty", e);
+            return false;
+        } catch (Exception e) {
+            log.error("Unexpected error during token validation", e);
             return false;
         }
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        try {
+            log.debug("Getting signing key with secret length: {}", jwtSecret.length());
+            byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+            return Keys.hmacShaKeyFor(keyBytes);
+        } catch (Exception e) {
+            log.error("Error creating signing key", e);
+            throw e;
+        }
     }
 }

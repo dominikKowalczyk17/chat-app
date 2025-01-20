@@ -64,6 +64,39 @@ public class AuthUseCaseImpl implements AuthUseCase {
     }
 
     @Override
+    public AuthenticationResult autoLogin(String refreshToken) {
+        // Najpierw sprawdź czy refresh token jest ważny
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
+            throw new UnauthorizedAccessException("Invalid refresh token");
+        }
+
+        // Pobierz email użytkownika z tokenu
+        String userEmail = jwtTokenProvider.getEmailFromRefreshToken(refreshToken);
+
+        // Znajdź użytkownika
+        UserEntity userEntity = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UserNotFoundException(userEmail));
+
+        // Ustaw status online
+        userEntity.setOnlineStatus(true);
+        userRepository.save(userEntity);
+
+        // Wygeneruj nową parę tokenów
+        String newToken = jwtTokenProvider.generateToken(userEntity);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(userEntity);
+
+        User user = new User(
+                (long) userEntity.getId(),
+                userEntity.getEmail(),
+                userEntity.getUsername(),
+                userEntity.getLastseen(),
+                userEntity.isOnline()
+        );
+
+        return new AuthenticationResult(newToken, newRefreshToken, user);
+    }
+
+    @Override
     public void logout(String token) {
         String userEmail = jwtTokenProvider.getEmailFromToken(token);
 

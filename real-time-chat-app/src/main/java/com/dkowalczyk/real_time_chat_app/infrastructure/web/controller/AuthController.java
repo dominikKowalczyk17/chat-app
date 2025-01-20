@@ -3,12 +3,11 @@ package com.dkowalczyk.real_time_chat_app.infrastructure.web.controller;
 import com.dkowalczyk.real_time_chat_app.application.ports.input.AuthUseCase;
 import com.dkowalczyk.real_time_chat_app.domain.model.AuthenticationResult;
 import com.dkowalczyk.real_time_chat_app.domain.model.UserCredentials;
+import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.request.AutoLoginRequest;
 import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.request.LoginRequest;
-import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.request.LogoutRequest;
 import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.request.RegisterRequest;
 import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.response.LoginResponse;
 import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.response.UserResponse;
-import com.dkowalczyk.real_time_chat_app.security.jwt.JwtAuthenticationFilter;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +32,25 @@ public class AuthController {
         );
 
         AuthenticationResult result = authUseCase.login(credentials);
+
+        UserResponse userResponse = new UserResponse(
+                result.user().getId(),
+                result.user().getEmail(),
+                result.user().getUsername(),
+                result.user().isOnline(),
+                result.user().getLastSeen()
+        );
+
+        return ResponseEntity.ok(new LoginResponse(
+                result.token(),
+                result.refreshToken(),
+                userResponse
+        ));
+    }
+
+    @PostMapping("/auto-login")
+    public ResponseEntity<LoginResponse> autoLogin(@RequestBody AutoLoginRequest request) {
+        AuthenticationResult result = authUseCase.autoLogin(request.refreshToken());
 
         UserResponse userResponse = new UserResponse(
                 result.user().getId(),

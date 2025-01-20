@@ -8,6 +8,8 @@ public interface AuthUseCase {
 
     void logout(String email);
 
+    AuthenticationResult autoLogin(String token);
+
     String refreshToken(String refreshToken);
 
     AuthenticationResult register(UserCredentials credentials, String username);
