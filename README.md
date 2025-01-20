@@ -52,7 +52,11 @@ Backend aplikacji czatowej w czasie rzeczywistym, zbudowany przy użyciu Spring 
 ### Autoryzacja
 * POST `/api/auth/register` - Rejestracja nowego użytkownika
 * POST `/api/auth/login` - Logowanie użytkownika
-* POST `/api/auth/login` - Wylogowanie użytkownika
+* POST `/api/auth/logout` - Wylogowanie użytkownika
+* POST `/api/auth/auto-login` - Auto logowanie
+* POST `/api/auth/refresh/refresh` - Odśwież token
+### User
+* PUT `/api/user/update` - Zmiany dla użytkownika
 
 ## Bezpieczeństwo
 
