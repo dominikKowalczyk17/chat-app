@@ -22,7 +22,7 @@ Backend aplikacji czatowej w czasie rzeczywistym, zbudowany przy użyciu Spring 
 1. **Sklonuj repozytorium**:
 
   ```bash
-  git clone <repository-url>
+  git clone <https://github.com/dominikKowalczyk17/chat-app.git>
   ```
 2. **Skonfiguruj bazę danych w application.properties**:
 
