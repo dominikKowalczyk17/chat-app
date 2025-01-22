@@ -9,6 +9,7 @@ import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.request.Register
 import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.response.LoginResponse;
 import com.dkowalczyk.real_time_chat_app.infrastructure.web.dto.response.UserResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
     private final AuthUseCase authUseCase;
 
@@ -40,6 +42,7 @@ public class AuthController {
                 result.user().isOnline(),
                 result.user().getLastSeen()
         );
+        log.info(userResponse.toString());
 
         return ResponseEntity.ok(new LoginResponse(
                 result.token(),

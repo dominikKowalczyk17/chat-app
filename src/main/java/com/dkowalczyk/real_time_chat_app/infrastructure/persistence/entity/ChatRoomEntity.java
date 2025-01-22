@@ -1,6 +1,7 @@
 package com.dkowalczyk.real_time_chat_app.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "chat_rooms")
+@Data
 public class ChatRoomEntity {
 
     @Id

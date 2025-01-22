@@ -1,11 +1,13 @@
 package com.dkowalczyk.real_time_chat_app.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "message")
+@Data
 public class MessageEntity {
 
     @Id
