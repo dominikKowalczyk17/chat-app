@@ -26,6 +26,6 @@ public class WebsocketMessagePublisher implements MessagePublisher {
     @Override
     public void publishTypingEvent(TypingResponse typingEvent) {
         messagingTemplate.convertAndSend(
-                "/topic/chat" + typingEvent.chatRoomId() + "/typing", typingEvent);
+                "/topic/chat/" + typingEvent.chatRoomId() + "/typing", typingEvent);
     }
 }

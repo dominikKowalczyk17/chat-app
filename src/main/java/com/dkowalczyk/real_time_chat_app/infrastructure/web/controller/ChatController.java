@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -18,21 +19,21 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatController {
-
-    public MessageUseCase messageUseCase;
-
-    public ChatController(MessageUseCase messageUseCase) {
-        this.messageUseCase = messageUseCase;
-    }
+    private final MessageUseCase messageUseCase;
+    private final SimpMessagingTemplate messagingTemplate; // Ensure this is injected
 
     @MessageMapping("/chat.send")
     public void handleChatMessage(
             @Payload MessageRequest messageRequest,
-            @AuthenticationPrincipal UserDetails userDetails,
             Principal principal
     ) {
         Long userId = Long.parseLong(principal.getName());
-        log.debug("Handling chat message from user: {}", userId);
-        messageUseCase.sendMessage(messageRequest, userId);
+        log.debug("Broadcasting message to /topic/chat/{}", messageRequest.chatRoomId());
+
+        // Broadcast to subscribers
+        messagingTemplate.convertAndSend(
+                "/topic/chat/" + messageRequest.chatRoomId(),
+                messageRequest
+        );
     }
 }
